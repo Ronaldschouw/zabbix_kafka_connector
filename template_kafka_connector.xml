@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<zabbix_export>
+    <version>5.2</version>
+    <date>2021-05-28T10:15:18Z</date>
+    <groups>
+        <group>
+            <name>Kafka</name>
+        </group>
+    </groups>
+    <templates>
+        <template>
+            <template>Template Kafka Connector</template>
+            <name>Template Kafka Connector</name>
+            <groups>
+                <group>
+                    <name>Kafka</name>
+                </group>
+            </groups>
+            <applications>
+                <application>
+                    <name>Kafka-Connector</name>
+                </application>
+            </applications>
+            <discovery_rules>
+                <discovery_rule>
+                    <name>Connector discovery</name>
+                    <key>connector.discovery</key>
+                    <delay>5m</delay>
+                    <lifetime>0</lifetime>
+                    <item_prototypes>
+                        <item_prototype>
+                            <name>State of {#CONNECTOR}  connector</name>
+                            <key>state[{#CONNECTOR}]</key>
+                            <delay>5m</delay>
+                            <trends>0</trends>
+                            <value_type>TEXT</value_type>
+                            <description>Check the state of a Kafka connector.
+Value's PAUSED RUNNING or FAILED.</description>
+                            <applications>
+                                <application>
+                                    <name>Kafka-Connector</name>
+                                </application>
+                            </applications>
+                            <trigger_prototypes>
+                                <trigger_prototype>
+                                    <expression>{str(FAILED)}=1</expression>
+                                    <name>Kafka Connector {#CONNECTOR} on {HOST.NAME} is FAILED</name>
+                                </trigger_prototype>
+                                <trigger_prototype>
+                                    <expression>{str(RUNNING,6h)}=0 and {str(FAILED)}=1</expression>
+                                    <name>Kafka Connector {#CONNECTOR} on {HOST.NAME} is not RUNNING</name>
+                                    <priority>WARNING</priority>
+                                    <description>Update this issue to the OC Team</description>
+                                </trigger_prototype>
+                            </trigger_prototypes>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>State of {#CONNECTOR_ID} task</name>
+                            <key>task[{#CONNECTOR_ID}]</key>
+                            <delay>5m</delay>
+                            <trends>0</trends>
+                            <value_type>TEXT</value_type>
+                            <description>Check the state of a Kafka connector task.
+Value's PAUSED RUNNING or FAILED.</description>
+                            <applications>
+                                <application>
+                                    <name>Kafka-Connector</name>
+                                </application>
+                            </applications>
+                            <trigger_prototypes>
+                                <trigger_prototype>
+                                    <expression>{str(FAILED)}=1</expression>
+                                    <name>Kafka Connector task {#CONNECTOR_ID} on {HOST.NAME} is FAILED</name>
+                                    <url>http://{#CONNECTOR_ID}</url>
+                                    <description>Needed for restart a connector task.
+NEVER EVER CHANGE URL ABOVE !!
+Used by remote action &quot;Restart Kafka Connector Task&quot;
+The conector task should get the state RUNNING.</description>
+                                    <tags>
+                                        <tag>
+                                            <tag>Kafka</tag>
+                                            <value>RESTART TASK</value>
+                                        </tag>
+                                    </tags>
+                                </trigger_prototype>
+                                <trigger_prototype>
+                                    <expression>{str(RUNNING,6h)}=0 and {str(FAILED)}=1</expression>
+                                    <name>Kafka Connector task {#CONNECTOR_ID} on {HOST.NAME} is not RUNNING</name>
+                                    <priority>WARNING</priority>
+                                    <description>Update this issue to the OC Team</description>
+                                </trigger_prototype>
+                            </trigger_prototypes>
+                        </item_prototype>
+                    </item_prototypes>
+                </discovery_rule>
+            </discovery_rules>
+        </template>
+    </templates>
+</zabbix_export>
